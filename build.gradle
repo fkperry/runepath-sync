@@ -29,3 +29,19 @@ tasks.register('run', JavaExec) {
     jvmArgs '-ea'
     args '--developer-mode', '--debug'
 }
+ 
+// Portable Windows development build. Keep dependency JARs intact so their
+// service metadata and native libraries aren't lost in a merged archive.
+tasks.register('portableWindowsClient', Sync) {
+    dependsOn testClasses
+    into layout.buildDirectory.dir('portable-client')
+    from(sourceSets.main.output) { into 'classes' }
+    from(sourceSets.test.output) {
+        include 'com/runepath/sync/RunePathSyncPluginTest.class'
+        into 'classes'
+    }
+    from(configurations.testRuntimeClasspath.filter { f ->
+        !f.name.matches('lwjgl.*-natives-(linux.*|macos.*|windows-x86|windows-arm64)\\.jar')
+    }) { into 'lib' }
+    from('LICENSE', 'THIRD_PARTY_NOTICES.md', 'README.md')
+}

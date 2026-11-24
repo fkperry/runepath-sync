@@ -19,7 +19,7 @@ final class RunePathHttp
 
     RunePathHttp(OkHttpClient client, String origin)
     {
-        this.client = client;
+        this.client = client.newBuilder().followRedirects(false).followSslRedirects(false).build();
         this.origin = origin;
     }
 

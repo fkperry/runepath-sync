@@ -1,0 +1,51 @@
+name: RunePath portable Windows test client
+on:
+  push:
+    branches: [feature/runepath-sync-mvp]
+    paths:
+      - 'build.gradle'
+      - 'src/**'
+      - '.github/workflows/portable-windows.yml'
+      - 'portable/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portable:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          architecture: x64
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build and test source, then stage portable client
+        shell: pwsh
+        run: |
+          .\gradlew.bat --no-daemon clean build portableWindowsClient
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Bundle minimal Java runtime and launcher
+        shell: pwsh
+        run: |
+          $out = "build/portable-client"
+          & "$env:JAVA_HOME/bin/jlink.exe" --add-modules java.se,jdk.jshell,jdk.unsupported,jdk.crypto.ec,jdk.crypto.cryptoki,jdk.zipfs,jdk.management,jdk.management.agent,jdk.attach,jdk.jfr,jdk.naming.dns,jdk.security.auth,jdk.security.jgss --strip-debug --no-header-files --no-man-pages --compress=2 --output "$out/runtime"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item portable/Launch-RunePath.bat "$out/Launch-RunePath.bat"
+          Copy-Item portable/START-HERE.txt "$out/START-HERE.txt"
+          Set-Content "$out/BUILD-COMMIT.txt" $env:GITHUB_SHA
+          & "$out/runtime/bin/java.exe" -version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$out/runtime/bin/java.exe" -cp "$out/classes;$out/lib/*" com.runepath.sync.RunePathSyncPluginTest --help
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $size = (Get-ChildItem "$out" -Recurse -File | Measure-Object Length -Sum).Sum
+          Write-Host "Extracted package size: $size bytes"
+      - name: Upload portable Windows x64 ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: RunePath-Sync-Windows-x64
+          path: build/portable-client/
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 14

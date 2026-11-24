@@ -10,7 +10,7 @@ public interface RunePathSyncConfig extends Config
     @ConfigItem(
         keyName = "serverUrl",
         name = "RunePath HTTPS URL",
-        description = "The published RunePath HTTPS address; default is https://runepath.floot.app. Do not enter preview links.",
+        description = "Only the published RunePath HTTPS origin (https://runepath.floot.app) is accepted by this development build.",
         position = 0
     )
     default String serverUrl()

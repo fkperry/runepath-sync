@@ -1,0 +1,15 @@
+# RunePath Sync portable development client (Windows x64)
+
+This is a development-only RuneLite client, not a Plugin Hub release. It uses the official RuneLite development entry point and an Eclipse Temurin 17 runtime generated with jlink. No installation, IntelliJ, or Gradle is needed locally.
+
+1. Extract the entire artifact ZIP to a normal folder (not inside the ZIP viewer).
+2. Close the normal RuneLite client to avoid concurrent writes to RuneLite's shared cache/configuration.
+3. Double-click Launch-RunePath.bat. It starts RuneLite with a separate named settings profile, but RuneLite may still use existing shared caches and other local files.
+4. Enable RunePath Sync in the plugin list, opt into third-party syncing, and use the sidebar to pair with https://runepath.floot.app.
+5. If you use a Jagex Account, use RuneLite's official development login guide at https://github.com/runelite/runelite/wiki/Using-Jagex-Accounts. Keep all credentials on your own computer. NEVER upload or paste credentials.properties, tokens, passwords or session files. Delete the exported credential file and remove the temporary launcher option after testing.
+
+The client itself may still retrieve game files, updates or normal RuneLite network resources. The package is not an offline game client. Successful packaging and a --help smoke test do not prove that the game launches or pairing works.
+
+No credentials are bundled. The client sends progression data only after explicit opt-in and successful device pairing. RunePath's server address is restricted to its published HTTPS origin, with redirects disabled.
+
+Source: https://github.com/fkperry/runepath-sync

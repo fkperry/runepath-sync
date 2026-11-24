@@ -146,7 +146,13 @@ public class RunePathSyncPlugin extends Plugin
             {
                 throw new IllegalArgumentException();
             }
-            return new RunePathHttp(http, "https://" + uri.getAuthority());
+            // Never send a pairing code or bearer token to a different origin.
+            if (!"runepath.floot.app".equalsIgnoreCase(uri.getHost()) ||
+                (uri.getPort() != -1 && uri.getPort() != 443))
+            {
+                throw new IllegalArgumentException();
+            }
+            return new RunePathHttp(http, "https://runepath.floot.app");
         }
         catch (RuntimeException e)
         {
@@ -377,7 +383,7 @@ public class RunePathSyncPlugin extends Plugin
             }
         }
         questData.add("quests", questRows);
-        if (questRows.size() >= 10) datasets.add("quests", questData);
+        if (questRows.size() == Quest.values().length) datasets.add("quests", questData);
 
         // Keep datasets independent: incomplete cache data never wipes older snapshots.
         // A game-cache mismatch must not prevent skills and quest progress from syncing.
