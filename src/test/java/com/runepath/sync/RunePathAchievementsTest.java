@@ -1,7 +1,6 @@
 package com.runepath.sync;
 
 import org.junit.Test;
-import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.*;
@@ -21,8 +20,8 @@ public class RunePathAchievementsTest
     @Test
     public void combatCatalogFitsBitsetAndContainsUniqueStructures() throws Exception
     {
-        int[] ids = intArray("COMBAT_STRUCT_IDS");
-        int[] varps = intArray("COMBAT_TASK_VARPS");
+        int[] ids = RunePathAchievements.COMBAT_STRUCT_IDS;
+        int[] varps = RunePathAchievements.COMBAT_TASK_VARPS;
         assertEquals("Validate game cache task catalog when OSRS updates", 637, ids.length);
         assertEquals("Bit-packed varps should cover all indexed tasks", 20, varps.length);
         assertTrue(ids.length <= varps.length * 32);
@@ -33,11 +32,9 @@ public class RunePathAchievementsTest
     @Test
     public void diariesHaveTwelveAreasAndFourTiersEach() throws Exception
     {
-        Field namesField = RunePathAchievements.class.getDeclaredField("DIARY_AREAS");
-        namesField.setAccessible(true);
-        String[] names = (String[]) namesField.get(null);
-        int[][] completion = intMatrix("DIARY_COMPLETE_VARBITS");
-        int[][] counts = intMatrix("DIARY_COUNT_VARBITS");
+        String[] names = RunePathAchievements.DIARY_AREAS;
+        int[][] completion = RunePathAchievements.DIARY_COMPLETE_VARBITS;
+        int[][] counts = RunePathAchievements.DIARY_COUNT_VARBITS;
         assertEquals(12, names.length);
         assertEquals(names.length, completion.length);
         assertEquals(names.length, counts.length);
@@ -48,17 +45,4 @@ public class RunePathAchievementsTest
         }
     }
 
-    private static int[] intArray(String name) throws Exception
-    {
-        Field field = RunePathAchievements.class.getDeclaredField(name);
-        field.setAccessible(true);
-        return (int[]) field.get(null);
-    }
-
-    private static int[][] intMatrix(String name) throws Exception
-    {
-        Field field = RunePathAchievements.class.getDeclaredField(name);
-        field.setAccessible(true);
-        return (int[][]) field.get(null);
-    }
 }
