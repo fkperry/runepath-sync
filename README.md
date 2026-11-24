@@ -6,7 +6,7 @@ We are building this in public. Thanks for visiting, and feel free to follow dev
 
 ## Current development status
 
-**The plugin is a work in progress and is not yet released on RuneLite's Plugin Hub.** The RunePath app is being prepared for a public HTTPS release, and live game testing will follow RuneLite's maintenance window.
+**The plugin is a work in progress and is not yet released on RuneLite's Plugin Hub.** **RunePath is now live at [runepath.floot.app](https://runepath.floot.app).** The RuneLite plugin builds in the cloud, but real gameplay and pairing still need testing after RuneLite maintenance.
 
 - [View the RunePath Sync implementation and full README](https://github.com/fkperry/runepath-sync/tree/feature/runepath-sync-mvp)
 - [Review the current development pull request](https://github.com/fkperry/runepath-sync/pull/1)
