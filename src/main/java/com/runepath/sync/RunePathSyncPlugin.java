@@ -22,6 +22,7 @@ import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -56,6 +57,7 @@ public class RunePathSyncPlugin extends Plugin
     private ScheduledExecutorService executor;
     private ScheduledFuture<?> pairingPoll;
     private RunePathSyncPanel panel;
+    private RunePathAchievements achievements;
     private NavigationButton navigation;
     private volatile String deviceCode;
     private volatile String pendingCharacter;
@@ -78,6 +80,7 @@ public class RunePathSyncPlugin extends Plugin
             thread.setDaemon(true);
             return thread;
         });
+        achievements = new RunePathAchievements(client);
         panel = new RunePathSyncPanel(this::startPairing, this::queueSync, this::forgetLocalToken);
         BufferedImage image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gfx = image.createGraphics();
@@ -105,6 +108,7 @@ public class RunePathSyncPlugin extends Plugin
     @Subscribe
     public void onGameStateChanged(GameStateChanged event)
     {
+        if (event.getGameState() == GameState.LOGIN_SCREEN && achievements != null) achievements.reset();
         if (event.getGameState() == GameState.LOGGED_IN) queueSync();
     }
 
@@ -119,6 +123,16 @@ public class RunePathSyncPlugin extends Plugin
     {
         // Debounced; quest varbits change independently of skills.
         queueSync();
+    }
+
+    @Subscribe
+    public void onWidgetLoaded(WidgetLoaded event)
+    {
+        if (event.getGroupId() == 741 && achievements != null)
+        {
+            // The diary journal only exposes named task rows when opened in game.
+            clientThread.invokeLater(() -> achievements.observeDiaryJournal());
+        }
     }
 
     private RunePathHttp api()
@@ -364,6 +378,12 @@ public class RunePathSyncPlugin extends Plugin
         }
         questData.add("quests", questRows);
         if (questRows.size() >= 10) datasets.add("quests", questData);
+
+        // Keep datasets independent: incomplete cache data never wipes older snapshots.
+        JsonObject diaryData = achievements.captureDiaries();
+        if (diaryData != null) datasets.add("diaries", diaryData);
+        JsonObject combatData = achievements.captureCombatAchievements();
+        if (combatData != null) datasets.add("combatAchievements", combatData);
         root.add("datasets", datasets);
         return root;
     }
