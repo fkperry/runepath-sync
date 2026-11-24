@@ -27,9 +27,9 @@ import net.runelite.api.widgets.Widget;
  */
 final class RunePathAchievements
 {
-    private static final String[] DIARY_AREAS = {"Ardougne", "Desert", "Falador", "Fremennik", "Kandarin", "Karamja", "Kourend & Kebos", "Lumbridge & Draynor", "Morytania", "Varrock", "Western Provinces", "Wilderness"};
+    static final String[] DIARY_AREAS = {"Ardougne", "Desert", "Falador", "Fremennik", "Kandarin", "Karamja", "Kourend & Kebos", "Lumbridge & Draynor", "Morytania", "Varrock", "Western Provinces", "Wilderness"};
     private static final String[] DIARY_TIERS = {"easy", "medium", "hard", "elite"};
-    private static final int[][] DIARY_COMPLETE_VARBITS = {
+    static final int[][] DIARY_COMPLETE_VARBITS = {
         {4458, 4459, 4460, 4461},
         {4483, 4484, 4485, 4486},
         {4462, 4463, 4464, 4465},
@@ -43,7 +43,7 @@ final class RunePathAchievements
         {4471, 4472, 4473, 4474},
         {4466, 4467, 4468, 4469}
     };
-    private static final int[][] DIARY_COUNT_VARBITS = {
+    static final int[][] DIARY_COUNT_VARBITS = {
         {6291, 6292, 6293, 6294}, 
         {6307, 6308, 6309, 6310}, 
         {6299, 6300, 6301, 6302}, 
@@ -61,11 +61,11 @@ final class RunePathAchievements
         {"easy", "medium", "hard", "elite", "master", "grandmaster"};
     private static final int[] COMBAT_TIER_FLAGS = {12863, 12864, 12865, 12866, 12867, 12868};
     private static final int[] COMBAT_TIER_COUNTS = {12885, 12886, 12887, 12888, 12889, 12890};
-    private static final int[] COMBAT_TASK_VARPS = {
+    static final int[] COMBAT_TASK_VARPS = {
         3116, 3117, 3118, 3119, 3120, 3121, 3122, 3123, 3124, 3125,
         3126, 3127, 3128, 3387, 3718, 3773, 3774, 4204, 4496, 4721,
     };
-    private static final int[] COMBAT_STRUCT_IDS = {
+    static final int[] COMBAT_STRUCT_IDS = {
         327, 3164, 3168, 3172, 3173, 3175, 3177, 3179, 3180, 3181,     
         3216, 3220, 3538, 3260, 3261, 3262, 3269, 3271, 3274, 3302,     
         3314, 3600, 3317, 3346, 3419, 3421, 3422, 3425, 3427, 3493,     
