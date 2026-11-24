@@ -31,12 +31,36 @@ jobs:
         shell: pwsh
         run: |
           $out = "build/portable-client"
-          & "$env:JAVA_HOME/bin/jlink.exe" --add-modules java.se,jdk.jshell,jdk.unsupported,jdk.crypto.ec,jdk.crypto.cryptoki,jdk.zipfs,jdk.management,jdk.management.agent,jdk.attach,jdk.jfr,jdk.naming.dns,jdk.security.auth,jdk.security.jgss --strip-debug --no-header-files --no-man-pages --compress=2 --output "$out/runtime"
+          & "$env:JAVA_HOME/bin/jlink.exe" --add-modules java.se,jdk.jshell,jdk.unsupported,jdk.crypto.ec,jdk.crypto.cryptoki,jdk.zipfs,jdk.management,jdk.management.agent,jdk.attach,jdk.jfr,jdk.naming.dns,jdk.security.auth,jdk.security.jgss,jdk.crypto.mscapi,jdk.httpserver,jdk.charsets,jdk.net,jdk.accessibility,jdk.management.jfr --strip-debug --no-header-files --no-man-pages --compress=2 --output "$out/runtime"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Copy-Item portable/Launch-RunePath.bat "$out/Launch-RunePath.bat"
           Copy-Item portable/START-HERE.txt "$out/START-HERE.txt"
           Set-Content "$out/BUILD-COMMIT.txt" $env:GITHUB_SHA
           & "$out/runtime/bin/java.exe" -version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Validate the exact Java classes and Windows certificate provider used
+          # during real RuneLite startup, not just the --help argument.
+          $probe = Join-Path $env:RUNNER_TEMP "RuntimeStartupProbe.java"
+          @'
+          import com.sun.net.httpserver.HttpServer;
+          import java.net.InetSocketAddress;
+          import java.security.KeyStore;
+          import javax.net.ssl.TrustManagerFactory;
+          public class RuntimeStartupProbe {
+              public static void main(String[] args) throws Exception {
+                  KeyStore roots = KeyStore.getInstance("Windows-ROOT");
+                  roots.load(null, null);
+                  TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                  tmf.init(roots);
+                  HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+                  server.stop(0);
+                  System.out.println("PASS: Windows-ROOT trust store and local HttpServer");
+              }
+          }
+          '@ | Set-Content -Encoding ascii $probe
+          & "$env:JAVA_HOME/bin/javac.exe" -d "$env:RUNNER_TEMP" $probe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$out/runtime/bin/java.exe" -cp "$env:RUNNER_TEMP" RuntimeStartupProbe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$out/runtime/bin/java.exe" -ea -cp "$out/classes;$out/lib/*" com.runepath.sync.RunePathSyncPluginTest --help
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -47,6 +71,14 @@ jobs:
         with:
           name: RunePath-Sync-Windows-x64
           path: build/portable-client/
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 14
+      - name: Upload replacement Java runtime only (for existing testers)
+        uses: actions/upload-artifact@v4
+        with:
+          name: RunePath-Java-runtime-fix-x64
+          path: build/portable-client/runtime/
           if-no-files-found: error
           compression-level: 9
           retention-days: 14
