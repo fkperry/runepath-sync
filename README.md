@@ -20,9 +20,9 @@ The plugin never asks for Jagex credentials, and **bank, inventory, equipment an
 
 ## Getting connected
 
-1. Open the [RunePath app](https://floot.com/) using its published address. Sign in and choose **Account**.
+1. Open [RunePath](https://runepath.floot.app), sign in and choose **Account**.
 2. Run this development plugin inside RuneLite using `./gradlew run` (Windows: `gradlew.bat run`).
-3. In RunePath Sync settings, enter your **published RunePath HTTPS origin**, not a Floot preview link. Enable third-party progression sync, which defaults to **off**.
+3. In RunePath Sync settings, keep the default HTTPS address (`https://runepath.floot.app`) and enable third-party progression sync, which defaults to **off**. Do not use a Floot preview link.
 4. Log into your OSRS character and open the RunePath Sync sidebar.
 5. Select **Connect RunePath** and enter the temporary code in RunePath's **Account → Connect RuneLite** area.
 6. Check the requested character and device name before approving. The client should then start syncing supported progression.
