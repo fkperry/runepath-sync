@@ -41,7 +41,7 @@ final class RunePathHttp
             JsonObject parsed;
             try
             {
-                parsed = JsonParser.parseString(content).getAsJsonObject();
+                parsed = new JsonParser().parse(content).getAsJsonObject();
             }
             catch (RuntimeException e)
             {
