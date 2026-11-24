@@ -21,7 +21,8 @@ public interface RunePathSyncConfig extends Config
     @ConfigItem(
         keyName = "allowProgressSync",
         name = "Enable third-party progress sync",
-        description = "Opt in to sending your IP address, OSRS character name, skill levels/XP, quests, achievement diary status and combat achievement task progress to a third-party RunePath server not verified or controlled by RuneLite developers.",
+        description = "Opt in to sending your OSRS character name, skill levels/XP, quests, achievement diaries and combat achievements to the RunePath HTTPS server.",
+        warning = "This feature submits your IP address to a 3rd-party server not controlled or verified by RuneLite developers",
         position = 1
     )
     default boolean allowProgressSync()
