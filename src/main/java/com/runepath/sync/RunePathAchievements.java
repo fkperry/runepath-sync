@@ -280,8 +280,10 @@ final class RunePathAchievements
         if (client.getGameState() != GameState.LOGGED_IN) return null;
         if (!checkedCombatTaskCache)
         {
-            checkedCombatTaskCache = true;
             loadCombatTaskCache();
+            // Game-cache structs may not all be ready right after login.
+            // Retry on a later sync instead of permanently skipping achievements.
+            checkedCombatTaskCache = combatTasks.size() == COMBAT_STRUCT_IDS.length;
         }
 
         // Prefer omitting an incomplete capture rather than sending task totals
@@ -376,7 +378,9 @@ final class RunePathAchievements
             {
                 String normalizedCandidate = normalise(candidate + " Tasks");
                 if (name.equals(normalizedCandidate) ||
-                    name.equals(normalise(candidate + " Area Tasks")))
+                    name.equals(normalise(candidate + " Area Tasks")) ||
+                    (candidate.equals("Western Provinces") && name.equals("WESTERN_AREA_TASKS")) ||
+                    (candidate.equals("Lumbridge & Draynor") && name.equals("LUMBRIDGE_&_DRAYNOR_TASKS".replace('&', '_'))))
                 {
                     area = candidate;
                     break;
