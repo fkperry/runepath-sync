@@ -13,6 +13,7 @@ permissions:
 jobs:
   portable:
     runs-on: windows-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -37,7 +38,7 @@ jobs:
           Set-Content "$out/BUILD-COMMIT.txt" $env:GITHUB_SHA
           & "$out/runtime/bin/java.exe" -version
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & "$out/runtime/bin/java.exe" -cp "$out/classes;$out/lib/*" com.runepath.sync.RunePathSyncPluginTest --help
+          & "$out/runtime/bin/java.exe" -ea -cp "$out/classes;$out/lib/*" com.runepath.sync.RunePathSyncPluginTest --help
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $size = (Get-ChildItem "$out" -Recurse -File | Measure-Object Length -Sum).Sum
           Write-Host "Extracted package size: $size bytes"
