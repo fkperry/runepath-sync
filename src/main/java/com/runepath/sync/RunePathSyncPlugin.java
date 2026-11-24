@@ -380,10 +380,25 @@ public class RunePathSyncPlugin extends Plugin
         if (questRows.size() >= 10) datasets.add("quests", questData);
 
         // Keep datasets independent: incomplete cache data never wipes older snapshots.
-        JsonObject diaryData = achievements.captureDiaries();
-        if (diaryData != null) datasets.add("diaries", diaryData);
-        JsonObject combatData = achievements.captureCombatAchievements();
-        if (combatData != null) datasets.add("combatAchievements", combatData);
+        // A game-cache mismatch must not prevent skills and quest progress from syncing.
+        try
+        {
+            JsonObject diaryData = achievements.captureDiaries();
+            if (diaryData != null) datasets.add("diaries", diaryData);
+        }
+        catch (RuntimeException ignored)
+        {
+            panel.status("Diary data not ready; preserved previous cloud snapshot");
+        }
+        try
+        {
+            JsonObject combatData = achievements.captureCombatAchievements();
+            if (combatData != null) datasets.add("combatAchievements", combatData);
+        }
+        catch (RuntimeException ignored)
+        {
+            panel.status("Combat achievements not ready; preserved previous snapshot");
+        }
         root.add("datasets", datasets);
         return root;
     }
