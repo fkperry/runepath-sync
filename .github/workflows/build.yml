@@ -18,3 +18,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Compile and test (Java 11 target)
         run: ./gradlew --no-daemon clean build
+      - name: Upload small sidebar update for existing Windows testers
+        if: github.ref == 'refs/heads/feature/runepath-sync-mvp'
+        uses: actions/upload-artifact@v4
+        with:
+          name: RunePath-sidebar-update
+          path: build/classes/java/main/com/runepath/sync/RunePathSyncPanel.class
+          if-no-files-found: error
+          retention-days: 14
